@@ -1,6 +1,4 @@
 
-# %matplotlib inline
-#from center_loss import CenterLoss 
 import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,7 +25,7 @@ LR = 0.001              # learning rate
 DOWNLOAD_MNIST = True   # set to False if you have downloaded
 
 #Normalize with the grayscale channel's mean and var
-#https://discuss.pytorch.org/t/normalization-in-the-mnist-example/457
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--margin',default=2,type=int)
@@ -56,7 +54,6 @@ train_data = torchvision.datasets.MNIST(
 
 )
 
-# torchvision.datasets.MNIST(root='/home/ubuntu/notebooks/mnist', train=True)
 
 test_data = torchvision.datasets.MNIST(
     root='./mnist/', 
@@ -70,7 +67,6 @@ print(train_data.train_labels.size())               # (60000)
 # convert test data into Variable, pick 2000 samples to speed up testing
 # test_data = torchvision.datasets.MNIST(root='./mnist/', train=False,transform=testTransform)
 
-# Data Loader for easy mini-batch return in training, the image batch shape will be (50, 1, 28, 28)
 train_loader = DataLoader(
     dataset=train_data, 
     batch_size=BATCH_SIZE, 
@@ -81,7 +77,6 @@ testLoader = DataLoader(
         batch_size=BATCH_SIZE, 
         shuffle=False)
 
-# https://discuss.pytorch.org/t/feedback-on-pytorch-for-kaggle-competitions/2252/4
 
 model = dn(num_init_features=10,margin=args.margin)
 model.cuda()
@@ -89,14 +84,9 @@ model.cuda()
 # Hyper Parameters
 EPOCH = 5
 
-# train the training data n times, to save time, we just train 1 epoch
 BATCH_SIZE = 128
 LR = 0.0001
-#optimizer = optim.SGD(model.parameters(), lr=LR,
-                            #momentum=0.9, weight_decay=1e-4)
 
-#center_loss = CenterLoss(num_classes=10, feat_dim=10, use_gpu=True)
-#params= list(model.parameters()) + list(center_loss.parameters())
 optimizer = torch.optim.Adam(model.parameters(), lr=LR)   # optimize all cnn parameters
 loss_func = nn.CrossEntropyLoss()   # the target label is not one-hotted
 
@@ -137,11 +127,8 @@ for epoch in range(EPOCH):
         #print(np.shape(b_x))
         #print(np.shape(b_y))
         output = model(x = b_x.cuda(),target =b_y.cuda())               # cnn output
-        #print(np.shape(b_x))
-        #print(np.shape(output))
-        #print(b_y.shape)
+
         loss = loss_func(output.cuda(),b_y.cuda())
-        #print(loss)
         optimizer.zero_grad()           # clear gradients for this training step
         loss.backward()                 # backpropagation, compute gradients
         optimizer.step()                # apply gradients
@@ -187,13 +174,4 @@ body_model = body_model[0][3][3][4]
 layer1 = body_model
 tensor = layer1.weight.data.cpu().numpy()
 plot_kernels(tensor)
-
-#body_model = [i for i in mm.children()]
-
-#c = 0
-#for i in body_model[0]:
- #   c+=1
-  #  print (i)
-
-#body_model[0][3][3][4]
 

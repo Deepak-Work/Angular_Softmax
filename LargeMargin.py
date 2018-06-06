@@ -1,11 +1,8 @@
-# https://github.com/pytorch/vision/blob/master/torchvision/models/densenet.py
 
-# https://github.com/felixgwu/img_classification_pk_pytorch/blob/master/models/densenet.py
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from collections import OrderedDict
-#from torchvision.models.densenet import _Transition
 from lsoftmax import LSoftmaxLinear
 import math
 
@@ -31,7 +28,6 @@ class _DenseLayer(nn.Sequential):
         # If the bottle neck mode is set, apply feature reduction to limit the growth of features
         # Why should we expand the number of features by bn_size*growth?
 
-        # https://stats.stackexchange.com/questions/194142/what-does-1x1-convolution-mean-in-a-neural-network
         if bn_size > 0:
             interChannels = 4*growth_rate
             self.add_module('conv1', nn.Conv2d(
@@ -64,16 +60,7 @@ class _DenseBlock(nn.Sequential):
 
 
 class DenseNet(nn.Module):
-    """Densenet-BC model class, based on
-    Args:
-        growth_rate (int) - how many filters to add each layer (`k` in paper)
-        block_config (list of 4 ints) - how many layers in each pooling block
-        num_init_features (int) - the number of filters to learn in the first convolution layer
-        bn_size (int) - multiplicative factor for number of bottle neck layers
-          (i.e. bn_size * k features in the bottleneck layer)
-        drop_rate (float) - dropout rate after each dense layer
-        num_classes (int) - number of classification classes
-    """
+
 
     def __init__(self, growth_rate=4, block_config=(6, 6, 6), compression=0.5,
                  num_init_features=24, bn_size=4, drop_rate=0, avgpool_size=8,
@@ -116,7 +103,6 @@ class DenseNet(nn.Module):
 
             # Final batch norm
             self.features.add_module('last_norm%d' % (i+1), nn.BatchNorm2d(num_features))
-        #self.last_norm = nn.BatchNorm2d(num_features)
             # Linear layer
             self.classifier = nn.Linear(num_features, num_features)
             self.lsoftmax_linear = LSoftmaxLinear(input_dim=num_features,output_dim = num_classes,margin = margin)
@@ -129,11 +115,3 @@ class DenseNet(nn.Module):
         #out = self.classifier(out)
         logit = self.lsoftmax_linear(input= out,target=target)
         return logit
-        '''
-         conv_output = self.net(input)
-        batch_size = conv_output.size(0)
-        fc_input = conv_output.view(batch_size, -1)
-        fc_output = self.fc(fc_input)
-        logit = self.lsoftmax_linear(input=fc_output, target=target)
-        return logit
-        '''
