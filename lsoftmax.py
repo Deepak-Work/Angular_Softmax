@@ -15,7 +15,7 @@ class LSoftmaxLinear(nn.Module):
         self.output_dim = output_dim
         self.margin = margin
 
-        self.weight = nn.Parameter(torch.zeros(input_dim, output_dim))
+        self.weight = nn.Parameter(torch.zeros([nput_dim, output_dim]))
 
         self.divisor = math.pi / self.margin
         self.coeffs = binom(margin, range(0, margin + 1, 2))
