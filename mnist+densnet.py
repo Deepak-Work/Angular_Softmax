@@ -92,6 +92,7 @@ loss_func = nn.CrossEntropyLoss()   # the target label is not one-hotted
 
 
 def accuracy():
+    model.eval()
     test_loss = 0
     correct = 0
     i=0
@@ -101,7 +102,7 @@ def accuracy():
         data, target = Variable(data, volatile=True), Variable(target)
         data = data.cuda()
         target = target.cuda()
-        output = model(x=data,target=target)
+        output = model(x=data)
         test_loss += loss_func(output,target= target).data[0]
         pred = output.data.max(1)[1] # get the index of the max log-probability
         correct += pred.eq(target.data).cpu().sum()
